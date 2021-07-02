@@ -37,7 +37,22 @@ x11()
 qqnorm( g$res, ylab = "Raw Residuals", pch = 16 )
 qqline( g$res )
 
+res=g$residuals
+watchout_points_norm = res[ which(abs(res) > 3  ) ]
+watchout_ids_norm = seq_along( res )[ which( abs(res)>3 ) ]
+
+points( g$fitted.values[ watchout_ids_norm ], watchout_points_norm, col = 'red', pch = 16 )
+
+gl = lm( BodyFat ~ ., bodyfat, subset = ( abs(res) < 3 ) )
+summary( gl )
+
+plot(gl,which=1)#NO OMOSCHEDASTICIT?, noto nadamento parabolico?
+shapiro.test(gl$residuals) #OK
+
 x11()
-b = boxcox(g)
+qqnorm( gl$res, ylab = "Raw Residuals", pch = 16 )
+qqline( gl$res )
+x11()
+b = boxcox(gl)
 best_lambda = b$x[ which.max( b$y ) ]
 best_lambda
