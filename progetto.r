@@ -23,9 +23,10 @@ head(cereal)
 #Look at the main statistics for each covariate:
 summary(cereal)
 
+x11()
 ggpairs(cereal)
 
-g = lm( pH ~ ., data = cereal )
+g = lm( rating ~ .-type-mfr, data = cereal )
 
 summary( g )   #sembra fico
 
