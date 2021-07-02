@@ -29,9 +29,13 @@ summary(scoliosi)
 x11()
 ggpairs(scoliosi)
 
-g = lm( lumbar_lordosis_angle ~ .-class, data = scoliosi )
+g1 = lm( lumbar_lordosis_angle ~ .-class, data = scoliosi )
 
-summary( g )   #sembra fico
+summary( g1 )   #ci sono na
+
+g = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, data = scoliosi )
+
+summary( g )
 
 plot(g,which=1)#NO OMOSCHEDASTICITÃ
 shapiro.test(g$residuals) #no normalità
