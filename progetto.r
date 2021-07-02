@@ -12,20 +12,20 @@ library(RColorBrewer)
 
 
 f <- file.choose()
-wine <- read.csv(f)
+cereal <- read.csv(f)
 
-View(wine)
+View(cereal)
 # Dimensioni
-dim(wine)
+dim(cereal)
 # Overview delle prime righe
-head(wine)
+head(cereal)
 
 #Look at the main statistics for each covariate:
-summary(wine)
+summary(cereal)
 
-ggpairs(wine)
+ggpairs(cereal)
 
-g = lm( pH ~ ., data = wine )
+g = lm( pH ~ ., data = cereal )
 
 summary( g )   #sembra fico
 
