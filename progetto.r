@@ -34,6 +34,7 @@ g = lm( lumbar_lordosis_angle ~ .-class, data = scoliosi )
 summary( g )   #sembra fico
 
 plot(g,which=1)#NO OMOSCHEDASTICITÃ, noto nadamento parabolico 
-shapiro.test(g$residuals) #OK
-plot(dataADJ$GDP,dataADJ$Happi)
-abline(a=reg$coefficients[1],b=reg$coefficients[2])#Non Ã¨ una bella interpolazione
+shapiro.test(g$residuals) 
+
+qqnorm( g$res, ylab = "Raw Residuals", pch = 16 )
+qqline( g$res )
