@@ -10,9 +10,12 @@ library(ggplot2)
 library(corrplot)
 library(RColorBrewer)
 
+# setto la working directory a quella del file sorgente
+library("rstudioapi")
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-f <- file.choose()
-bodyfat <- read.csv(f)
+# carico il dataset
+bodyfat = read.csv("bodyfat.csv", header = TRUE)
 
 View(bodyfat)
 # Dimensioni
