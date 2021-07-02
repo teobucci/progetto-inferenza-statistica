@@ -2,11 +2,11 @@ library( car )
 library( faraway )
 library( leaps )
 library(MASS)
+library( GGally)
 library(rgl)
 library(dplyr)
 library(data.table)
 library(ggplot2)
-library( GGally)
 library(corrplot)
 library(RColorBrewer)
 
@@ -34,14 +34,7 @@ g = lm( lumbar_lordosis_angle ~ .-class, data = scoliosi )
 summary( g )   #sembra fico
 
 plot(g,which=1)#NO OMOSCHEDASTICITÃ, noto nadamento parabolico 
+shapiro.test(g$residuals) 
 
-shapiro.test(g$residuals)
-
-x11()
 qqnorm( g$res, ylab = "Raw Residuals", pch = 16 )
 qqline( g$res )
-
-x11()
-b = boxcox(g)
-best_lambda = b$x[ which.max( b$y ) ]
-best_lambda

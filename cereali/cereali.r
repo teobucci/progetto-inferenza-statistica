@@ -12,30 +12,26 @@ library(RColorBrewer)
 
 
 f <- file.choose()
-scoliosi <- read.csv(f)
+cereal <- read.csv(f)
 
-View(scoliosi)
+View(cereal)
 # Dimensioni
-dim(scoliosi)
+dim(cereal)
 # Overview delle prime righe
-head(scoliosi)
-
-print(sapply(scoliosi,function(x) any(is.na(x)))) 
-print(sapply(scoliosi, typeof)) 
+head(cereal)
 
 #Look at the main statistics for each covariate:
-summary(scoliosi)
+summary(cereal)
 
 x11()
-ggpairs(scoliosi)
+ggpairs(cereal)
 
-g = lm( lumbar_lordosis_angle ~ .-class, data = scoliosi )
+g = lm( rating ~ .-type-mfr-name, data = cereal )
 
 summary( g )   #sembra fico
 
 plot(g,which=1)#NO OMOSCHEDASTICITÃ, noto nadamento parabolico 
-
-shapiro.test(g$residuals)
+shapiro.test(g$residuals) #not OK
 
 x11()
 qqnorm( g$res, ylab = "Raw Residuals", pch = 16 )
