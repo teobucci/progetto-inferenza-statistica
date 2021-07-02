@@ -38,6 +38,24 @@ g1 = lm( lumbar_lordosis_angle ~ .-class, data = scoliosi )
 
 summary( g1 )   #ci sono na
 
+X = scoliosi [c(-7,-3)]#not considering the response variable
+cor( X )
+# Note: - the high positive correlation between Murder and Illiteracy, Income and HS.Grad
+#       - the high negative correlation between Murder and HS.Grad, Illiteracy and Frost
+x11()
+corrplot(cor(X), method='number')
+x11()
+corrplot(cor(X), method='color')
+x11()
+heatmap( cor( X ), Rowv = NA, Colv = NA, symm = TRUE, keep.dendro = F)
+#image( as.matrix( cor( X ) ), main = 'Correlation of X' )
+
+ggpairs(X)
+
+
+
+
+
 g = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, data = scoliosi )
 
 summary( g )
