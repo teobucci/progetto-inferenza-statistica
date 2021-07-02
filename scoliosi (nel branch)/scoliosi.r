@@ -37,11 +37,14 @@ ggpairs(scoliosi)
 g1 = lm( lumbar_lordosis_angle ~ .-class, data = scoliosi )
 
 summary( g1 )   #ci sono na
+#mostro che è lin dipendente
+g2 = lm(sacral_slope~ .-class-lumbar_lordosis_angle, data = scoliosi )
 
-X = scoliosi [c(-7,-3)]#not considering the response variable
+summary( g2 )
+
+X = scoliosi [c(-3,-7)]
 cor( X )
-# Note: - the high positive correlation between Murder and Illiteracy, Income and HS.Grad
-#       - the high negative correlation between Murder and HS.Grad, Illiteracy and Frost
+
 x11()
 corrplot(cor(X), method='number')
 x11()
