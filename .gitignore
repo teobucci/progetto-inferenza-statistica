@@ -47,3 +47,4 @@ vignettes/*.pdf
 *.fls
 *.fdb_latexmk
 *.snm
+.ipynb_checkpoints/Notebook-checkpoint.ipynb
