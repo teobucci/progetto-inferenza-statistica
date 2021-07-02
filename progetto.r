@@ -12,21 +12,24 @@ library(RColorBrewer)
 
 
 f <- file.choose()
-cereal <- read.csv(f)
+scoliosi <- read.csv(f)
 
-View(cereal)
+View(scoliosi)
 # Dimensioni
-dim(cereal)
+dim(scoliosi)
 # Overview delle prime righe
-head(cereal)
+head(scoliosi)
+
+print(sapply(scoliosi,function(x) any(is.na(x)))) 
+print(sapply(scoliosi, typeof)) 
 
 #Look at the main statistics for each covariate:
-summary(cereal)
+summary(scoliosi)
 
 x11()
-ggpairs(cereal)
+ggpairs(scoliosi)
 
-g = lm( rating ~ .-type-mfr-name, data = cereal )
+g = lm( lumbar_lordosis_angle ~ .-class, data = scoliosi )
 
 summary( g )   #sembra fico
 
