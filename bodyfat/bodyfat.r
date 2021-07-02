@@ -59,3 +59,28 @@ x11()
 b = boxcox(gl)
 best_lambda = b$x[ which.max( b$y ) ]
 best_lambda
+
+gb = lm( (BodyFat^best_lambda -1)/best_lambda ~ ., bodyfat, subset = ( abs(res) < 3 ) )
+summary( gb )
+
+plot(gb,which=1)#NO OMOSCHEDASTICIT?, noto nadamento parabolico?
+shapiro.test(gb$residuals) #OK
+
+x11()
+qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
+qqline( gb$res )
+
+gf = lm( BodyFat ~ .-Density, data = bodyfat )
+summary( gf )
+
+plot(gf,which=1)#NO OMOSCHEDASTICIT?, noto nadamento parabolico?
+shapiro.test(gf$residuals) #OK
+
+x11()
+qqnorm( gf$res, ylab = "Raw Residuals", pch = 16 )
+qqline( gf$res )
+
+x11()
+b = boxcox(gf)
+best_lambda = b$x[ which.max( b$y ) ]
+best_lambda
