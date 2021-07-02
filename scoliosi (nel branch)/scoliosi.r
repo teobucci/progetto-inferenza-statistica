@@ -119,3 +119,11 @@ shapiro.test(gb$residuals) #ho normalita
 qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
 qqline( gb$res )
 
+gk = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope-pelvic_radius, data=scoliosi,subset = ( abs(res) < 40 ) )
+summary( gk )
+
+plot(gk,which=1)#noto omoschedasticita dei residui
+shapiro.test(gk$residuals) #ho normalita
+
+qqnorm( gk$res, ylab = "Raw Residuals", pch = 16 )
+qqline( gk$res )
