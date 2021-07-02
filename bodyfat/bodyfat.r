@@ -26,11 +26,18 @@ summary(bodyfat)
 x11()
 ggpairs(bodyfat)
 
-g = lm( rating ~ .-type-mfr-name, data = bodyfat )
+g = lm( BodyFat ~ ., data = bodyfat )
 
 summary( g )   #sembra fico
 
 plot(g,which=1)#NO OMOSCHEDASTICIT?, noto nadamento parabolico?
 shapiro.test(g$residuals) #OK
-plot(dataADJ$GDP,dataADJ$Happi)
-abline(a=reg$coefficients[1],b=reg$coefficients[2])#Non è una bella interpolazione
+
+x11()
+qqnorm( g$res, ylab = "Raw Residuals", pch = 16 )
+qqline( g$res )
+
+x11()
+b = boxcox(g)
+best_lambda = b$x[ which.max( b$y ) ]
+best_lambda
