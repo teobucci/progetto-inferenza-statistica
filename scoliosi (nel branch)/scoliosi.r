@@ -10,9 +10,12 @@ library(ggplot2)
 library(corrplot)
 library(RColorBrewer)
 
+# setto la working directory a quella del file sorgente
+library("rstudioapi")
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-f <- file.choose()
-scoliosi <- read.csv(f)
+# carico il dataset
+scoliosi = read.csv("column_3C_weka.csv", header = TRUE)
 
 View(scoliosi)
 # Dimensioni
@@ -20,6 +23,7 @@ dim(scoliosi)
 # Overview delle prime righe
 head(scoliosi)
 
+#controllo se ci sono degli NA
 print(sapply(scoliosi,function(x) any(is.na(x)))) 
 print(sapply(scoliosi, typeof)) 
 
@@ -37,6 +41,7 @@ g = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, data = scoliosi )
 
 summary( g )
 
+
 plot(g,which=1)#NO OMOSCHEDASTICITÃ
 shapiro.test(g$residuals) #no normalità
 
@@ -52,7 +57,7 @@ qqline( g$res )
 # gb = lm( (lumbar_lordosis_angle^best_lambda -1)/best_lambda ~ .-class, data=scoliosi )
 # summary( gb )
 # 
-# plot(gb,which=1)#NO OMOSCHEDASTICITÃ, noto nadamento parabolico 
+# plot(gb,which=1)#NO OMOSCHEDASTICIT?, noto nadamento parabolico?
 # shapiro.test(gb$residuals) 
 # 
 # qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
@@ -82,6 +87,7 @@ best_lambdagl
 
 gb = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class, data=scoliosi,subset = ( abs(res) < 40 ) )
 summary( gb )
+
 
 plot(gb,which=1)#noto omoschedasticita dei residui
 shapiro.test(gb$residuals) #ho normalita
