@@ -26,7 +26,7 @@ summary(cereal)
 x11()
 ggpairs(cereal)
 
-g = lm( rating ~ .-type-mfr, data = cereal )
+g = lm( rating ~ .-type-mfr-name, data = cereal )
 
 summary( g )   #sembra fico
 
