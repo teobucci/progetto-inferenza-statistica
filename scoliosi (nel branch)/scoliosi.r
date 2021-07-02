@@ -14,6 +14,7 @@ library(RColorBrewer)
 f <- file.choose()
 scoliosi <- read.csv(f)
 
+na.omit(scoliosi)
 View(scoliosi)
 # Dimensioni
 dim(scoliosi)
@@ -53,6 +54,8 @@ qqline( g$res )
 # qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
 # qqline( gb$res )
 
+p=g$rank
+n=dim(scoliosi)[1]
 res=g$residuals
 watchout_points_norm = res[ which(abs(res) > 40 ) ]
 watchout_ids_norm = seq_along( res )[ which( abs(res)>40 ) ]
@@ -68,6 +71,7 @@ shapiro.test(gl$residuals) #OK
 x11()
 qqnorm( gl$res, ylab = "Raw Residuals", pch = 16 )
 qqline( gl$res )
+
 x11()
 b = boxcox(gl)
 best_lambdagl = b$x[ which.max( b$y ) ]
@@ -76,7 +80,7 @@ best_lambdagl
 gb = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class, data=scoliosi,subset = ( abs(res) < 40 ) )
 summary( gb )
 
-plot(gb,which=1)#NO OMOSCHEDASTICITÃ, noto nadamento parabolico 
+plot(gb,which=1)
 shapiro.test(gb$residuals) 
 
 qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
