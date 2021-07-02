@@ -38,3 +38,12 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 .DS_Store
+*.aux
+*.nav
+*.out
+*.log
+*.gz
+*.toc
+*.fls
+*.fdb_latexmk
+*.snm
