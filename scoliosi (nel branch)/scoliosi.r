@@ -85,15 +85,22 @@ qqline( g$res )
 # qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
 # qqline( gb$res )
 
-p=g$rank
-n=dim(scoliosi)[1]
-res=g$residuals
-watchout_points_norm = res[ which(abs(res) > 40 ) ]
-watchout_ids_norm = seq_along( res )[ which( abs(res)>40 ) ]
+stud = rstandard( g )
 
-points( g$fitted.values[ watchout_ids_norm ], watchout_points_norm, col = 'red', pch = 16 )
+watchout_ids_stud = which( abs( stud ) > 2 )
+watchout_stud = stud[ watchout_ids_stud ]
+watchout_stud
 
-gl = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs(res) < 40 ) )
+
+plot( g$fitted.values, stud, ylab = "Studentized Residuals", main = "Studentized Residuals", pch = 16 )
+points( g$fitted.values[watchout_ids_stud], 
+        stud[watchout_ids_stud], col = 'pink', pch = 16 )
+abline( h = c(-2,2), lty = 2, col = 'orange' )
+legend('topright', col = c('pink'), 
+       c('Studentized Residual'), pch = rep( 16, 3 ), bty = 'n' )
+
+
+gl = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs( stud ) < 2) )
 summary( gl )
 
 plot(gl,which=1)# non male
