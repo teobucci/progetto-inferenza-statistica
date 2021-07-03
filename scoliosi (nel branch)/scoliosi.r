@@ -270,7 +270,7 @@ gp=lm(lumbar_lordosis_angle~pelvic_incidence,data=scoliosi)
 grid = seq( min(pelvic_incidence), max(pelvic_incidence), 2 )
 
 # automatic prediction
-y.pred = predict( gk, data.frame( pelvic_incidence = grid ), interval = "confidence", se = T )
+y.pred = predict( gp, data.frame( pelvic_incidence = grid ), interval = "confidence", se = T )
 
 names( y.pred )
 
