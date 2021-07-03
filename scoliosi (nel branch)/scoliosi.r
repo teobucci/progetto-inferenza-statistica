@@ -63,6 +63,7 @@ g2 = lm(sacral_slope~ .-class-lumbar_lordosis_angle, data = scoliosi )
 
 # vediamo cosa otteniamo
 summary( g2 )
+
 # osserviamo che R^2_adj è esattamente 1, osservando i beta dei parametri
 # scopriamo che 
 # sacral_slope + pelvic_tilt = pelvic_incidence
