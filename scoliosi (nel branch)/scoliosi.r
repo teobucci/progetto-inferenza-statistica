@@ -184,6 +184,11 @@ bartlett.test(  (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ,sco
 boxcoxfr(scoliosi$lumbar_lordosis_angle, scoliosi$class, option = "both", lambda = seq(-3, 3, 0.01), lambda2 = NULL, 
          tau = 0.05, alpha = 0.05, verbose = TRUE)
 
+gA = lm( 1/time ~ poison * treat, data=scoliosi )
+
+summary(gA)  #mooolto meglio
+anova(gA)  #come prima, tolgo linterazione, pesante e poco significativa
+
 
 
 #4)Modello reg : studio dei punti influenti
