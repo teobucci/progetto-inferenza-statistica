@@ -92,12 +92,20 @@ g = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, data = scoliosi )
 summary( g )
 # come ci aspettavamo  l'R^2_adj è invariato a 0.5272, così come p-value 2.2e-16
 
-# controlliamo 
-plot(g,which=1)#NO OMOSCHEDASTICIT?
-shapiro.test(g$residuals) #no normalit?
 
+# Procediamo con la diagnostica
+plot(g,which=1)
+# omoschedasticità non fantastica
+
+shapiro.test(g$residuals)
+# normalita' schifosa, p-value 3.878e-11
+
+# vediamo il qq pot dei residui
 qqnorm( g$res, ylab = "Raw Residuals", pch = 16 )
 qqline( g$res )
+
+# dobbiamo fare trasformazione box cox per validare le nostre ipotesi di lavoro
+# gia' che ci siamo controlliamo cooks-distance-studentized residuals-leverages
 
 #SBAGLIATO
 #boxcox sul primo, con tutto dentro
@@ -114,13 +122,24 @@ qqline( g$res )
 # qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
 # qqline( gb$res )
 
-#residui studentizzati
+
+# PUNTI INFLUENTI
+
+#x11()
+#influencePlot( g, id.method = "identify", main = "influential Plot",sub = "Circle size is proportial to Cook's Distance" )
+
+#watchout_influential_ids = row.names(influencePlot( g, main = "influential Plot"))#, id=list(method="identify")))
+# "96"  "116" "198" sono influenti
+
+
+
+
+# RESIDUI STUDENTIZZATI
 stud = rstandard( g )
 
 watchout_ids_stud = which( abs( stud ) > 2 )
 watchout_stud = stud[ watchout_ids_stud ]
 watchout_stud
-
 
 plot( g$fitted.values, stud, ylab = "Studentized Residuals", main = "Studentized Residuals", pch = 16 )
 points( g$fitted.values[watchout_ids_stud], 
@@ -129,6 +148,9 @@ abline( h = c(-2,2), lty = 2, col = 'orange' )
 legend('topright', col = c('pink'), 
        c('Studentized Residual'), pch = rep( 16, 3 ), bty = 'n' )
 
+
+
+# Generiamo di nuovo il modello lineare dopo aver ripulito i residui studentizzati
 
 gl = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs( stud ) < 2) )
 summary( gl )
@@ -139,6 +161,10 @@ shapiro.test(gl$residuals) #non sono normali
 x11()
 qqnorm( gl$res, ylab = "Raw Residuals", pch = 16 )
 qqline( gl$res )
+
+
+
+
 
 
 #uso boxcox
@@ -214,6 +240,7 @@ summary(gA)  #meglio, tutti significativi
 anova(gA)  #pvalue basso, rifiuto hp tutte le medie sono uguali
 
 
+
 #4)Modello reg : studio dei punti influenti
 x11()
 influencePlot( gk, id.method = "identify", main = "influential Plot",
@@ -273,6 +300,8 @@ points( pelvic_incidence, lumbar_lordosis_angle, col = "blue", pch = 16 )
 x11()
 matplot( grid, y.pred2$fit, lty = c( 1, 2, 2 ), col = c( 1, 2, 2 ), type = "l", xlab = "pelvic_incidence", ylab = "lumbar_lordosis_angle", 
          main = "IC per la media e IP per singole osservazioni" )
+
 lines( grid, y.pred$fit[ , 2 ] , col = "blue", lty = 2, xlab = "pelvic_incidence", ylab = "lumbar_lordosis_angle" )
 lines( grid, y.pred$fit[ , 3 ] , col = "blue", lty = 2, xlab = "pelvic_incidence", ylab = "lumbar_lordosis_angle" )
 points( pelvic_incidence, lumbar_lordosis_angle, col = "black", pch = 16 )
+
