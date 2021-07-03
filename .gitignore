@@ -48,3 +48,4 @@ vignettes/*.pdf
 *.fdb_latexmk
 *.snm
 .ipynb_checkpoints/Notebook-checkpoint.ipynb
+*.vrb
