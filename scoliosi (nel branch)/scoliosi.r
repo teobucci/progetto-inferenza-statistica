@@ -285,23 +285,24 @@ Ps
 #non abbiamo ipotesi di normalita
 Var = tapply( scoliosi$lumbar_lordosis_angle,scoliosi$class , var )
 Var  #95-152-268
-scoliosi$class=factor(scoliosi$class,ordered=F)
+scoliosi$class=factor(scoliosi$class,ordered=F)  #li ordina
 
 leveneTest(scoliosi$lumbar_lordosis_angle, scoliosi$class)
 bartlett.test(scoliosi$lumbar_lordosis_angle, scoliosi$class)
+#non ho omoschedasticita
 
 #modello buono, ma non valido
 reg=lm(scoliosi$lumbar_lordosis_angle~scoliosi$class,data=scoliosi)
 summary(reg)
 
-#uso box cox
+#uso box cox per avere la normalita
 anB=boxcox(reg,lambda = seq(-3,3,by=0.01))
 best_lambda=anB$x[which.max(anB$y)]
 best_lambda
 
 Ps2 = tapply( (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ,scoliosi$class , function( x ) ( shapiro.test( x )$p ) )
 Ps2
-#adesso ho normalita bitches
+#adesso ho normalita 
 leveneTest( (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ,scoliosi$class )
 #pvalue alto, ho omoschedasticita, H0 varianze intragruppi omoschedastiche
 bartlett.test(  (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ,scoliosi$class )
@@ -313,7 +314,7 @@ boxcoxfr(scoliosi$lumbar_lordosis_angle, scoliosi$class, option = "both", lambda
 
 gA = lm( (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ~ class-sacral_slope, data=scoliosi )
 
-summary(gA)  #meglio, tutti significativi
+summary(gA)  #meglio, tutti significativi, rquadro discreto
 anova(gA)  #pvalue basso, rifiuto hp tutte le medie sono uguali
 
 
