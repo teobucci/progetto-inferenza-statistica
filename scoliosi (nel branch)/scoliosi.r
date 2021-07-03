@@ -208,14 +208,18 @@ influence.measures( g )
 
 g_post_lev = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( lev<2*p/n)  )
 summary( g_post_lev )
+AIC(g_post_lev)
 
 g_post_rs = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs(stud)<2 ) )
 summary( g_post_rs )
+AIC(g_post_rs)
 
 g_post_both = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs(stud)<2 | lev<2*p/n ))
 summary( g_post_both )
+AIC(g_post_both)
 
-#notiamo che il modello migliore è quello senza i punti influenti trovati coi residui studentizzati
+#notiamo che il modello migliore è quello senza i punti influenti trovati coi residui studentizzati, 
+#poiche è quello con l r quadro maggiore e quello con l AIC minore  
 
 # l'R^2_adj aumenta notevolmente a 0.7261
 # p Ã¨ 2.2e-16, ci sono ancora covariate non significative, stavolta diverse da prima
