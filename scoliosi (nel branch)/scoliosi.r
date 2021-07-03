@@ -341,6 +341,7 @@ grid = seq( min(scoliosi$pelvic_incidence), max(scoliosi$pelvic_incidence), (max
 
 # automatic prediction
 ypred = predict( gp, data.frame( grid ), interval = "confidence", se = T )
+ypred
 
 names( ypred )
 
@@ -349,10 +350,10 @@ ypred.inf=ypred$fit[ ,2 ] # LB confidence interval for y_{new}.
 ypred.sup=ypred$fit[ ,3 ] # UB confidence interval for y_{new}.
 
 ypred$fit
+ypred$se
 
 ##Plot the CI of predictions.
-x11()
-plot(grid,ypred)
+plot.new()
 matplot( grid, cbind( ypred, ypred.inf, ypred.sup ), lty = c( 1, 2, 2 ), 
          col = c( 1, 'blue', 'blue' ), type = "l", xlab = "pelvic_incidence",
          ylab = "lumbar_lordosis_angle", main = 'IC per la media della risposta' )
