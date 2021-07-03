@@ -172,3 +172,14 @@ Ps2 = tapply( (scoliosi$lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ,s
 Ps2
 #adesso ho normalita bitches
 
+#4)Modello reg : studio dei punti influenti
+x11()
+influencePlot( gk, id.method = "identify", main = "influential Plot",
+               sub = "Circle size is proportial to Cook's Distance" )
+
+
+influenti_nomi=row.names(influencePlot( reg, main = "influential Plot"))#, id=list(method="identify")))
+influenti=c()
+for (names in influenti_nomi)
+  influenti=c(influenti,which(scoliosi$Country==names))
+
