@@ -85,6 +85,7 @@ qqline( g$res )
 # qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
 # qqline( gb$res )
 
+#leverages
 stud = rstandard( g )
 
 watchout_ids_stud = which( abs( stud ) > 2 )
