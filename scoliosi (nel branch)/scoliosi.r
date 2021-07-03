@@ -122,17 +122,27 @@ qqline( g$res )
 # qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
 # qqline( gb$res )
 
+#LEVERAGES
 
-# PUNTI INFLUENTI
+lev = hatvalues( g )  
+lev
 
-#x11()
-#influencePlot( g, id.method = "identify", main = "influential Plot",sub = "Circle size is proportial to Cook's Distance" )
+p = g$rank # p = 5 
+n = dim(scoliosi)[1] # n = 310, estrae il numero di righe
 
-#watchout_influential_ids = row.names(influencePlot( g, main = "influential Plot"))#, id=list(method="identify")))
-# "96"  "116" "198" sono influenti
+watchout_points_lev = lev[ which( lev > 2 * p/n  ) ]  #seleziono i punti leva
+watchout_points_lev  #20
+watchout_ids_lev = seq_along( lev )[ which( lev > 2 * p/n ) ]  #posizioni dei punti leva
 
+#RESIDUI STANDARDIZZATI
 
-
+#standardizzo
+gs = summary(g)
+res_std = g$res/gs$sigma
+#cerco quelli >2
+watchout_ids_rstd = which( abs( res_std ) > 2 )
+watchout_rstd = res_std[ watchout_ids_rstd ]
+watchout_rstd   #16
 
 # RESIDUI STUDENTIZZATI
 stud = rstandard( g )
@@ -141,14 +151,51 @@ watchout_ids_stud = which( abs( stud ) > 2 )
 watchout_stud = stud[ watchout_ids_stud ]
 watchout_stud
 
-plot( g$fitted.values, stud, ylab = "Studentized Residuals", main = "Studentized Residuals", pch = 16 )
-points( g$fitted.values[watchout_ids_stud], 
-        stud[watchout_ids_stud], col = 'pink', pch = 16 )
-abline( h = c(-2,2), lty = 2, col = 'orange' )
-legend('topright', col = c('pink'), 
-       c('Studentized Residual'), pch = rep( 16, 3 ), bty = 'n' )
+#plot solo degli studentizzati poiche sono quelli che togliamo
+#plot( g$fitted.values, stud, ylab = "Studentized Residuals", main = "Studentized Residuals", pch = 16 )
+#points( g$fitted.values[watchout_ids_stud], 
+ #       stud[watchout_ids_stud], col = 'pink', pch = 16 )
+#abline( h = c(-2,2), lty = 2, col = 'orange' )
+#legend('topright', col = c('pink'), 
+ #      c('Studentized Residual'), pch = rep( 16, 3 ), bty = 'n' )
 
 
+#COOK DISTANCE, PER ORA INUTILE
+
+#Cdist = cooks.distance( g ) #funzione per calcolare la formula di cook
+
+#watchout_ids_Cdist = which( Cdist > 4/(n-p) ) 
+#watchout_Cdist = Cdist[ watchout_ids_Cdist ]
+#watchout_Cdist  #19
+
+#graficone
+par( mfrow = c( 1, 3 ) )
+plot( g$fitted.values, res_std, pch = 16, xlab = 'Fitted values', 
+      ylab = 'Standardized residuals', main = 'Standardized residuals' )
+points( g$fitted.values[ watchout_ids_rstd ], res_std[ watchout_ids_rstd], 
+        col = 'green', pch = 16 )
+plot( g$fitted.values, stud, pch = 16, xlab = 'Fitted values', 
+      ylab = 'Studentized Residuals', main = 'Studentized Residuals' )
+points( g$fitted.values[ watchout_ids_stud ], stud[ watchout_ids_stud ], 
+        col = 'pink', pch = 16 )
+plot( g$fitted.values, lev, pch = 16, xlab = 'Fitted values', 
+      ylab = 'Leverages', main = 'Leverages' )
+points( g$fitted.values[ watchout_ids_lev ], lev[ watchout_ids_lev ],
+        col = 'orange', pch = 16 )
+
+# PUNTI INFLUENTI
+
+x11()
+influencePlot( g, id.method = "identify", main = "influential Plot",sub = "Circle size is proportial to Cook's Distance" )
+
+watchout_influential_ids = row.names(influencePlot( g, main = "influential Plot"))#, id=list(method="identify")))
+# "96"  "116" "198" sono influenti
+
+influence.measures( g )
+
+#asterischi sui punti di influenza
+#i punti di influenza vanno tolti!!! spostano troppo landamento del modello, anche se con essi ho un modello migliore
+#il modello non � rappresntativo di tutti i dati, vanno tolti
 
 # Generiamo di nuovo il modello lineare dopo aver ripulito i residui studentizzati
 
@@ -171,33 +218,55 @@ qqnorm( g_post_rs$res, ylab = "Raw Residuals", pch = 16 )
 qqline( g_post_rs$res )
 
 
-
-
-
-
-#uso boxcox
+# Per ottenere la normalita' facciamo BOX COX
 x11()
-b = boxcox(gl)
+b = boxcox(g_post_rs)
 best_lambdagl = b$x[ which.max( b$y ) ]
 best_lambdagl
+# lambda = 0.6262626
 
-gb = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope, data=scoliosi,subset = ( abs(stud) < 2 ) )
-summary( gb )
+# generiamo il nuovo LM dove modelliamo una funzione della risposta
+g_post_bc = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope, data=scoliosi,subset = ( abs(stud) < 2 ) )
+summary( g_post_bc )
+# R^2_adj diminuisce da 0.7261 a 0.725, nessun problema
+# ci sono covariate poco significative
 
-plot(gb,which=1)#noto omoschedasticita dei residui
-shapiro.test(gb$residuals) #ho normalita
 
-qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
-qqline( gb$res )
+# LE IPOTESI SONO VERIFICATE
 
-gk = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope-pelvic_radius, data=scoliosi,subset = ( abs(stud) < 2 ) )
-summary( gk )
+plot(g_post_bc,which=1)
+# omoschedasticita dei residui
 
-plot(gk,which=1)#noto omoschedasticita dei residui
-shapiro.test(gk$residuals) #ho normalita
+shapiro.test(g_post_bc$residuals)
+# p-value = 0.196 => non rifiutiamo la normalita'
 
-qqnorm( gk$res, ylab = "Raw Residuals", pch = 16 )
-qqline( gk$res )
+qqnorm( g_post_bc$res, ylab = "Raw Residuals", pch = 16 )
+qqline( g_post_bc$res )
+
+
+
+# SELEZIONE COVARIATE
+
+# rimuoviamo "pelvic_radius" che ha un p-value "one-at-a-time" di 0.0755,
+# c'è evidenza per dire che non è significativo
+g_without_pr = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope-pelvic_radius, data=scoliosi,subset = ( abs(stud) < 2 ) )
+summary( g_without_pr )
+# R^2_adj scende da 0.725 a 0.723, ma semplifica di molto il modello, quindi ok
+
+# riverifichiamo le ipotesi
+plot(g_without_pr,which=1) #noto omoschedasticita dei residui
+shapiro.test(g_without_pr$residuals) #ho normalita, p-value da 0.196 a 0.22, migliora la normalita'
+
+qqnorm( g_without_pr$res, ylab = "Raw Residuals", pch = 16 )
+qqline( g_without_pr$res )
+
+
+
+
+
+
+
+
 
 #ANOVA
 
@@ -248,22 +317,6 @@ summary(gA)  #meglio, tutti significativi
 anova(gA)  #pvalue basso, rifiuto hp tutte le medie sono uguali
 
 
-
-#4)Modello reg : studio dei punti influenti
-x11()
-influencePlot( gk, id.method = "identify", main = "influential Plot",
-               sub = "Circle size is proportial to Cook's Distance" )
-
-
-influenti_nomi=row.names(influencePlot( reg, main = "influential Plot"))#, id=list(method="identify")))
-influenti=c()
-for (names in influenti_nomi)
-  influenti=c(influenti,which(scoliosi$class==names))
-influenti
-scoliosi$class[influenti]
-
-Levscol = scoliosi[-influenti,]
-Levscol = Levscol[seq(4,9,1)]
 
 #5) int conf e prev
 gp=lm(scoliosi$lumbar_lordosis_angle~scoliosi$pelvic_incidence,data=scoliosi)
