@@ -219,7 +219,7 @@ summary( g_post_both )
 
 # l'R^2_adj aumenta notevolmente a 0.7261
 # p è 2.2e-16, ci sono ancora covariate non significative, stavolta diverse da prima
-
+x11()
 plot(g_post_rs,which=1)
 # abbiamo sufficiente omoschedasticita'
 
@@ -312,6 +312,7 @@ reg=lm(scoliosi$lumbar_lordosis_angle~scoliosi$class,data=scoliosi)
 summary(reg)
 
 #uso box cox per avere la normalita
+x11()
 anB=boxcox(reg,lambda = seq(-3,3,by=0.01))
 best_lambda=anB$x[which.max(anB$y)]
 best_lambda
