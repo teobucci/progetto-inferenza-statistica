@@ -156,7 +156,7 @@ shapiro.test(gb$residuals) #ho normalita
 qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
 qqline( gb$res )
 
-gk = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope-pelvic_radius, data=scoliosi,subset = ( abs(res) < 40 ) )
+gk = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope-pelvic_radius, data=scoliosi,subset = ( abs(stud) < 2 ) )
 summary( gk )
 
 plot(gk,which=1)#noto omoschedasticita dei residui
@@ -187,11 +187,9 @@ scoliosi$class=factor(scoliosi$class,ordered=F)
 leveneTest(scoliosi$lumbar_lordosis_angle, scoliosi$class)
 bartlett.test(scoliosi$lumbar_lordosis_angle, scoliosi$class)
 
-#non so cosa sia(?)  secondo me da togliere:
-###
+#modello buono, ma non valido
 reg=lm(scoliosi$lumbar_lordosis_angle~scoliosi$class,data=scoliosi)
 summary(reg)
-###
 
 #uso box cox
 anB=boxcox(reg,lambda = seq(-3,3,by=0.01))
