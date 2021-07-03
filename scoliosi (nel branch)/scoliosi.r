@@ -201,10 +201,22 @@ influence.measures( g )
 #i punti di influenza vanno tolti!!! spostano troppo landamento del modello, anche se con essi ho un modello migliore
 #il modello non è rappresntativo di tutti i dati, vanno tolti
 
-# Generiamo di nuovo il modello lineare dopo aver ripulito i residui studentizzati 
+# Generiamo di nuovo il modello lineare dopo aver ripulito:
+#-i residui studentizzati 
+#-i leverages
+#-entrambi
 
-g_post_rs = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs( stud ) < 2) )
+g_post_lev = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( lev<2*p/n)  )
+summary( g_post_lev )
+
+g_post_rs = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs(stud)<2 ) )
 summary( g_post_rs )
+
+g_post_both = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs(stud)<2 | lev<2*p/n ))
+summary( g_post_both )
+
+#notiamo che il modello migliore è quello senza i punti influenti trovati coi residui studentizzati
+
 # l'R^2_adj aumenta notevolmente a 0.7261
 # p Ã¨ 2.2e-16, ci sono ancora covariate non significative, stavolta diverse da prima
 
