@@ -41,7 +41,7 @@ summary( g1 )   #ci sono na
 g2 = lm(sacral_slope~ .-class-lumbar_lordosis_angle, data = scoliosi )
 
 summary( g2 )
-
+# sacral slope+pelvic tilt=pelvic incidence
 X = scoliosi [c(-3,-7)]
 cor( X )
 
