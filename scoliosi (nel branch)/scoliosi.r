@@ -157,11 +157,18 @@ scoliosi$class=factor(scoliosi$class,ordered=F)
 leveneTest(scoliosi$lumbar_lordosis_angle, scoliosi$class)
 #rifiuto ipotesi nulla, non c'è omoschedasticità
 
+#non so cosa sia(?)  secondo me da togliere:
+###
 reg=lm(scoliosi$lumbar_lordosis_angle~scoliosi$class,data=scoliosi)
 summary(reg)
+###
 
-anB=boxcox(reg)
+#uso box cox
+anB=boxcox(reg,lambda = seq(-3,3,by=0.01))
 best_lambda=anB$x[which.max(anB$y)]
 best_lambda
 
+Ps2 = tapply( (scoliosi$lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ,scoliosi$class , function( x ) ( shapiro.test( x )$p ) )
+Ps2
+#adesso ho normalita bitches
 
