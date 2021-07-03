@@ -9,6 +9,8 @@ library(data.table)
 library(ggplot2)
 library(corrplot)
 library(RColorBrewer)
+library(AID)
+library(onewaytests)
 
 # setto la working directory a quella del file sorgente
 library("rstudioapi")
@@ -181,8 +183,9 @@ Ps
 Var = tapply( scoliosi$lumbar_lordosis_angle,scoliosi$class , var )
 Var  #95-152-268
 scoliosi$class=factor(scoliosi$class,ordered=F)
+
 leveneTest(scoliosi$lumbar_lordosis_angle, scoliosi$class)
-#rifiuto ipotesi nulla, non c'? omoschedasticit?
+bartlett.test(scoliosi$lumbar_lordosis_angle, scoliosi$class)
 
 #non so cosa sia(?)  secondo me da togliere:
 ###
@@ -195,9 +198,19 @@ anB=boxcox(reg,lambda = seq(-3,3,by=0.01))
 best_lambda=anB$x[which.max(anB$y)]
 best_lambda
 
-Ps2 = tapply( (scoliosi$lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ,scoliosi$class , function( x ) ( shapiro.test( x )$p ) )
+Ps2 = tapply( (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ,scoliosi$class , function( x ) ( shapiro.test( x )$p ) )
 Ps2
 #adesso ho normalita bitches
+leveneTest( (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ,scoliosi$class )
+#pvalue alto, ho omoschedasticita, H0 varianze intragruppi omoschedastiche
+bartlett.test(  (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ,scoliosi$class )
+#stesso risultato
+
+#FUNZIONE TEO INTERNET
+boxcoxfr(scoliosi$lumbar_lordosis_angle, scoliosi$class, option = "both", lambda = seq(-3, 3, 0.01), lambda2 = NULL, 
+         tau = 0.05, alpha = 0.05, verbose = TRUE)
+
+
 
 #4)Modello reg : studio dei punti influenti
 x11()
@@ -208,5 +221,9 @@ influencePlot( gk, id.method = "identify", main = "influential Plot",
 influenti_nomi=row.names(influencePlot( reg, main = "influential Plot"))#, id=list(method="identify")))
 influenti=c()
 for (names in influenti_nomi)
-  influenti=c(influenti,which(scoliosi$Country==names))
+  influenti=c(influenti,which(scoliosi$class==names))
+influenti
+scoliosi$class[influenti]
 
+Levscol = scoliosi[-influenti,]
+Levscol = Levscol[seq(4,9,1)]
