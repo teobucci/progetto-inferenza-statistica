@@ -343,6 +343,12 @@ anova(gA)  #pvalue basso, rifiuto hp tutte le medie sono uguali
 
 #5) int conf e prev
 gp=lm(scoliosi$lumbar_lordosis_angle~scoliosi$pelvic_incidence,data=scoliosi)
+summary(gp)
+
+x11()
+plot(scoliosi$pelvic_incidence,scoliosi$lumbar_lordosis_angle)
+abline(a=gp$coefficients[1],b=gp$coefficients[2])
+
 grid = seq( min(scoliosi$pelvic_incidence), max(scoliosi$pelvic_incidence), (max(scoliosi$pelvic_incidence)- min(scoliosi$pelvic_incidence))/309 )
 
 # automatic prediction
@@ -360,7 +366,7 @@ ypred$se
 
 ##Plot the CI of predictions.
 plot.new()
-matplot( grid, cbind( ypred, ypred.inf, ypred.sup ), lty = c( 1, 2, 2 ), 
+matplot( grid, cbind( ypred$fit, ypred.inf, ypred.sup ), lty = c( 1, 2, 2 ), 
          col = c( 1, 'blue', 'blue' ), type = "l", xlab = "pelvic_incidence",
          ylab = "lumbar_lordosis_angle", main = 'IC per la media della risposta' )
 points( scoliosi$pelvic_incidence, scoliosi$lumbar_lordosis_angle, col = "black", pch = 16 )
