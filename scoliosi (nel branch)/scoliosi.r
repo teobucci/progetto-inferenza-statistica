@@ -150,15 +150,23 @@ legend('topright', col = c('pink'),
 
 # Generiamo di nuovo il modello lineare dopo aver ripulito i residui studentizzati
 
-gl = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs( stud ) < 2) )
-summary( gl )
+g_post_rs = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs( stud ) < 2) )
+summary( g_post_rs )
+# l'R^2_adj aumenta notevolmente a 0.7261
+# p è 2.2e-16, ci sono ancora covariate non significative, stavolta diverse da prima
 
-plot(gl,which=1)# non male
-shapiro.test(gl$residuals) #non sono normali
+plot(g_post_rs,which=1)
+# abbiamo sufficiente omoschedasticita'
+
+
+shapiro.test(g_post_rs$residuals)
+# tuttavia non abbiamo normalita' :(
+# il p-value e' ancora troppo basso 0.04041
 
 x11()
-qqnorm( gl$res, ylab = "Raw Residuals", pch = 16 )
-qqline( gl$res )
+# vediamo come fittano i quantili
+qqnorm( g_post_rs$res, ylab = "Raw Residuals", pch = 16 )
+qqline( g_post_rs$res )
 
 
 
