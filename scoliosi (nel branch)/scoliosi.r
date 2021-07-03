@@ -122,17 +122,27 @@ qqline( g$res )
 # qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
 # qqline( gb$res )
 
+#LEVERAGES
 
-# PUNTI INFLUENTI
+lev = hatvalues( g )  
+lev
 
-#x11()
-#influencePlot( g, id.method = "identify", main = "influential Plot",sub = "Circle size is proportial to Cook's Distance" )
+p = g$rank # p = 5 
+n = dim(scoliosi)[1] # n = 310, estrae il numero di righe
 
-#watchout_influential_ids = row.names(influencePlot( g, main = "influential Plot"))#, id=list(method="identify")))
-# "96"  "116" "198" sono influenti
+watchout_points_lev = lev[ which( lev > 2 * p/n  ) ]  #seleziono i punti leva
+watchout_points_lev  #20
+watchout_ids_lev = seq_along( lev )[ which( lev > 2 * p/n ) ]  #posizioni dei punti leva
 
+#RESIDUI STANDARDIZZATI
 
-
+#standardizzo
+gs = summary(g)
+res_std = g$res/gs$sigma
+#cerco quelli >2
+watchout_ids_rstd = which( abs( res_std ) > 2 )
+watchout_rstd = res_std[ watchout_ids_rstd ]
+watchout_rstd   #16
 
 # RESIDUI STUDENTIZZATI
 stud = rstandard( g )
@@ -141,14 +151,51 @@ watchout_ids_stud = which( abs( stud ) > 2 )
 watchout_stud = stud[ watchout_ids_stud ]
 watchout_stud
 
-plot( g$fitted.values, stud, ylab = "Studentized Residuals", main = "Studentized Residuals", pch = 16 )
-points( g$fitted.values[watchout_ids_stud], 
-        stud[watchout_ids_stud], col = 'pink', pch = 16 )
-abline( h = c(-2,2), lty = 2, col = 'orange' )
-legend('topright', col = c('pink'), 
-       c('Studentized Residual'), pch = rep( 16, 3 ), bty = 'n' )
+#plot solo degli studentizzati poiche sono quelli che togliamo
+#plot( g$fitted.values, stud, ylab = "Studentized Residuals", main = "Studentized Residuals", pch = 16 )
+#points( g$fitted.values[watchout_ids_stud], 
+ #       stud[watchout_ids_stud], col = 'pink', pch = 16 )
+#abline( h = c(-2,2), lty = 2, col = 'orange' )
+#legend('topright', col = c('pink'), 
+ #      c('Studentized Residual'), pch = rep( 16, 3 ), bty = 'n' )
 
 
+#COOK DISTANCE, PER ORA INUTILE
+
+#Cdist = cooks.distance( g ) #funzione per calcolare la formula di cook
+
+#watchout_ids_Cdist = which( Cdist > 4/(n-p) ) 
+#watchout_Cdist = Cdist[ watchout_ids_Cdist ]
+#watchout_Cdist  #19
+
+#graficone
+par( mfrow = c( 1, 3 ) )
+plot( g$fitted.values, res_std, pch = 16, xlab = 'Fitted values', 
+      ylab = 'Standardized residuals', main = 'Standardized residuals' )
+points( g$fitted.values[ watchout_ids_rstd ], res_std[ watchout_ids_rstd], 
+        col = 'green', pch = 16 )
+plot( g$fitted.values, stud, pch = 16, xlab = 'Fitted values', 
+      ylab = 'Studentized Residuals', main = 'Studentized Residuals' )
+points( g$fitted.values[ watchout_ids_stud ], stud[ watchout_ids_stud ], 
+        col = 'pink', pch = 16 )
+plot( g$fitted.values, lev, pch = 16, xlab = 'Fitted values', 
+      ylab = 'Leverages', main = 'Leverages' )
+points( g$fitted.values[ watchout_ids_lev ], lev[ watchout_ids_lev ],
+        col = 'orange', pch = 16 )
+
+# PUNTI INFLUENTI
+
+x11()
+influencePlot( g, id.method = "identify", main = "influential Plot",sub = "Circle size is proportial to Cook's Distance" )
+
+watchout_influential_ids = row.names(influencePlot( g, main = "influential Plot"))#, id=list(method="identify")))
+# "96"  "116" "198" sono influenti
+
+influence.measures( g )
+
+#asterischi sui punti di influenza
+#i punti di influenza vanno tolti!!! spostano troppo landamento del modello, anche se con essi ho un modello migliore
+#il modello non è rappresntativo di tutti i dati, vanno tolti
 
 # Generiamo di nuovo il modello lineare dopo aver ripulito i residui studentizzati
 
