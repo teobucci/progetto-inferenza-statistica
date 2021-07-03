@@ -171,7 +171,7 @@ b = boxcox(gl)
 best_lambdagl = b$x[ which.max( b$y ) ]
 best_lambdagl
 
-gb = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope, data=scoliosi,subset = ( abs(res) < 40 ) )
+gb = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope, data=scoliosi,subset = ( abs(stud) < 2 ) )
 summary( gb )
 
 plot(gb,which=1)#noto omoschedasticita dei residui
@@ -180,7 +180,7 @@ shapiro.test(gb$residuals) #ho normalita
 qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
 qqline( gb$res )
 
-gk = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope-pelvic_radius, data=scoliosi,subset = ( abs(res) < 40 ) )
+gk = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope-pelvic_radius, data=scoliosi,subset = ( abs(stud) < 2 ) )
 summary( gk )
 
 plot(gk,which=1)#noto omoschedasticita dei residui
@@ -211,11 +211,9 @@ scoliosi$class=factor(scoliosi$class,ordered=F)
 leveneTest(scoliosi$lumbar_lordosis_angle, scoliosi$class)
 bartlett.test(scoliosi$lumbar_lordosis_angle, scoliosi$class)
 
-#non so cosa sia(?)  secondo me da togliere:
-###
+#modello buono, ma non valido
 reg=lm(scoliosi$lumbar_lordosis_angle~scoliosi$class,data=scoliosi)
 summary(reg)
-###
 
 #uso box cox
 anB=boxcox(reg,lambda = seq(-3,3,by=0.01))
@@ -234,5 +232,126 @@ bartlett.test(  (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ,sco
 boxcoxfr(scoliosi$lumbar_lordosis_angle, scoliosi$class, option = "both", lambda = seq(-3, 3, 0.01), lambda2 = NULL, 
          tau = 0.05, alpha = 0.05, verbose = TRUE)
 
+gA = lm( (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ~ class-sacral_slope, data=scoliosi )
+
+summary(gA)  #meglio, tutti significativi
+anova(gA)  #pvalue basso, rifiuto hp tutte le medie sono uguali
 
 
+
+#4)Modello reg : studio dei punti influenti
+x11()
+influencePlot( gk, id.method = "identify", main = "influential Plot",
+               sub = "Circle size is proportial to Cook's Distance" )
+
+
+influenti_nomi=row.names(influencePlot( reg, main = "influential Plot"))#, id=list(method="identify")))
+influenti=c()
+for (names in influenti_nomi)
+  influenti=c(influenti,which(scoliosi$class==names))
+influenti
+scoliosi$class[influenti]
+
+Levscol = scoliosi[-influenti,]
+Levscol = Levscol[seq(4,9,1)]
+
+#5) int conf e prev
+grid = seq( min( altezza ), max( altezza ), 2 )
+
+# automatic prediction
+y.pred = predict( gk, data.frame( altezza = grid ), interval = "confidence", se = T )
+
+names( y.pred )
+
+# y.pred$fit[ ,1 ] # predicted values \hat{y}_{new}.
+# y.pred$fit[ ,2 ] # LB confidence interval for y_{new}.
+# y.pred$fit[ ,3 ] # UB confidence interval for y_{new}.
+
+y.pred$fit
+
+# manually
+ndata = cbind( rep( 1, length( grid ) ), grid )
+y.pred_fit = ndata %*% mod$coefficients 
+y.pred_fit
+
+#standard error
+y.pred$se
+#manually
+y.pred_se = rep( 0, 14 )
+X = model.matrix( mod )
+for( i in 1:14 )
+{
+  y.pred_se[ i ] = summary( mod )$sigma * sqrt( t( ndata[i,] ) %*% solve( t(X) %*% X ) %*% ndata[i,] ) 
+}
+y.pred_se
+
+# n - p = 8 - 2 = 6
+y.pred$df
+
+tc    = qt( 0.975, length( altezza ) - 2 )
+y     = y.pred_fit
+y.sup = y.pred_fit + tc * y.pred$se
+y.inf = y.pred_fit - tc * y.pred$se
+
+IC = cbind( y, y.inf, y.sup )
+
+IC
+y.pred$fit
+
+##Plot the CI of predictions.
+x11()
+matplot( grid, cbind( y, y.inf, y.sup ), lty = c( 1, 2, 2 ), 
+         col = c( 1, 'blue', 'blue' ), type = "l", xlab = "altezza",
+         ylab = "peso", main = 'IC per la media della risposta' )
+points( altezza, peso, col = "black", pch = 16 )
+
+#__6.c__  Compute the Prediction Interval for the one new observation. In this case the standard errors are:
+
+y.pred2 = predict( mod, data.frame( altezza = grid ), interval = "prediction", se = T )
+# fornisce direttamente gli estremi inf e sup, che prima abbiamo costruito a mano (in un altro caso)
+
+y.pred2$fit[ ,1 ] # predicted values \hat{y}_{new}.
+y.pred2$fit[ ,2 ] # LB prediction interval for y_{new}.
+y.pred2$fit[ ,3 ] # UB prediction interval for y_{new}.
+
+
+#manually
+ndata = cbind( rep( 1, length( grid ) ), grid )
+y.pred_fit = ndata %*% mod$coefficients 
+y.pred_fit
+
+# standard error
+y.pred2$se.fit
+#manually
+y.pred2_se = rep( 0, 14 )
+
+for( i in 1:14 )
+{
+  y.pred2_se[ i ] = summary( mod )$sigma * sqrt(  1 + t( ndata[i,] ) %*% solve( t(X) %*% X ) %*% ndata[i,] ) 
+}
+y.pred2_se
+
+#In this case y.pred2_se != y.pred2$se.fit
+
+tc    = qt( 0.975, length( altezza ) - 2 )
+y     = y.pred_fit
+y.sup = y.pred_fit + tc * y.pred2_se
+y.inf = y.pred_fit - tc * y.pred2_se
+
+IP = cbind( y, y.inf, y.sup )
+IP
+y.pred2$fit
+
+x11()
+matplot( grid, y.pred2$fit, lty = c( 1, 2, 2 ), col = c( 1, 2, 2 ), type = "l",
+         xlab = "altezza", ylab = "peso", main = 'IP per singole osservazioni' )
+points( altezza, peso, col = "blue", pch = 16 )
+
+
+##__6.d__ Compare the Intervals obtained at __6.b__ and __6.c__.
+x11()
+matplot( grid, y.pred2$fit, lty = c( 1, 2, 2 ), col = c( 1, 2, 2 ), type = "l", xlab = "altezza", ylab = "peso", 
+         main = "IC per la media e IP per singole osservazioni" )
+lines( grid, y.pred$fit[ , 2 ] , col = "blue", lty = 2, xlab = "altezza", ylab = "peso" )
+lines( grid, y.pred$fit[ , 3 ] , col = "blue", lty = 2, xlab = "altezza", ylab = "peso" )
+points( altezza, peso, col = "black", pch = 16 )
