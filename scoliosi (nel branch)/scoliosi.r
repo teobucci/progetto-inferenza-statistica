@@ -125,11 +125,13 @@ qqline( g$res )
 
 # PUNTI INFLUENTI
 
-x11()
-influencePlot( g, id.method = "identify", main = "influential Plot",sub = "Circle size is proportial to Cook's Distance" )
+#x11()
+#influencePlot( g, id.method = "identify", main = "influential Plot",sub = "Circle size is proportial to Cook's Distance" )
 
-watchout_influential_ids = row.names(influencePlot( g, main = "influential Plot"))#, id=list(method="identify")))
+#watchout_influential_ids = row.names(influencePlot( g, main = "influential Plot"))#, id=list(method="identify")))
 # "96"  "116" "198" sono influenti
+
+
 
 
 # RESIDUI STUDENTIZZATI
