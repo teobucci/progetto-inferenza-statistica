@@ -165,3 +165,14 @@ best_lambda=anB$x[which.max(anB$y)]
 best_lambda
 
 
+#4)Modello reg : studio dei punti influenti
+x11()
+influencePlot( gk, id.method = "identify", main = "influential Plot",
+               sub = "Circle size is proportial to Cook's Distance" )
+
+
+influenti_nomi=row.names(influencePlot( reg, main = "influential Plot"))#, id=list(method="identify")))
+influenti=c()
+for (names in influenti_nomi)
+  influenti=c(influenti,which(scoliosi$Country==names))
+
