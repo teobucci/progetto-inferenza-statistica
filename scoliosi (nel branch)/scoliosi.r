@@ -151,6 +151,9 @@ watchout_ids_stud = which( abs( stud ) > 2 )
 watchout_stud = stud[ watchout_ids_stud ]
 watchout_stud
 
+#I PUNTI INFLUENTI TROVATI COI RESIDUI STUDENTIZZATI SONO GLI STESSI
+#TROVATI COI RESIDUI STANDARDIZZATI
+
 #plot solo degli studentizzati poiche sono quelli che togliamo
 #plot( g$fitted.values, stud, ylab = "Studentized Residuals", main = "Studentized Residuals", pch = 16 )
 #points( g$fitted.values[watchout_ids_stud], 
@@ -189,7 +192,8 @@ x11()
 influencePlot( g, id.method = "identify", main = "influential Plot",sub = "Circle size is proportial to Cook's Distance" )
 
 watchout_influential_ids = row.names(influencePlot( g, main = "influential Plot"))#, id=list(method="identify")))
-# "96"  "116" "198" sono influenti
+# "96"  "116" "198" sono influenti, 96 è molto poco influente, quelli seriamente influenti sono sia nei 
+# residui standardizzati che nei studentizzati che nei leverages
 
 influence.measures( g )
 
@@ -197,7 +201,7 @@ influence.measures( g )
 #i punti di influenza vanno tolti!!! spostano troppo landamento del modello, anche se con essi ho un modello migliore
 #il modello non è rappresntativo di tutti i dati, vanno tolti
 
-# Generiamo di nuovo il modello lineare dopo aver ripulito i residui studentizzati
+# Generiamo di nuovo il modello lineare dopo aver ripulito i residui studentizzati 
 
 g_post_rs = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs( stud ) < 2) )
 summary( g_post_rs )
