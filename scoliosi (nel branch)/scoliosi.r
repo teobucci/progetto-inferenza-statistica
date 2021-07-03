@@ -138,12 +138,11 @@ qqline( gk$res )
 
 #ANOVA
 
-my_colors = brewer.pal( length( levels( scoliosi$class ) ), 'Set2')  #estraggo tanti colori
+my_colors = brewer.pal( length( levels( scoliosi$class ) ), 'Set1')  #estraggo tanti colori
 
 x11()
 boxplot( scoliosi$lumbar_lordosis_angle ~ scoliosi$class , xlab = 'class', ylab = 'lordosis',
-         main = 'lumbar lordosis angle according to class', col = my_colors 
-         )
+         main = 'lumbar lordosis angle according to class', col = my_colors )
 abline( h = mean( scoliosi$lumbar_lordosis_angle ) )  # linea sulla media globale dell angolo bla bla
 
 tapply( scoliosi$lumbar_lordosis_angle, scoliosi$class, length )#60-100-150
