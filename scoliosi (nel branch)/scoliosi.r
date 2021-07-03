@@ -156,7 +156,7 @@ watchout_stud
 #TROVATI COI RESIDUI STANDARDIZZATI
 
 #plot solo degli studentizzati poiche sono quelli che togliamo
-plot( g$fitted.values, stud, ylab = "Studentized Residuals", main = "Studentized Residuals", pch = 16 )
+plot( g$fitted.values, stud, ylab = "Studentized Residuals",xlab = "Fitted Values", main = "Studentized Residuals", pch = 16 )
 points( g$fitted.values[watchout_ids_stud], 
         stud[watchout_ids_stud], col = 'pink', pch = 16 )
 abline( h = c(-2,2), lty = 2, col = 'orange' )
