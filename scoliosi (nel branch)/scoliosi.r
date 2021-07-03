@@ -156,7 +156,7 @@ watchout_stud
 #TROVATI COI RESIDUI STANDARDIZZATI
 
 #plot solo degli studentizzati poiche sono quelli che togliamo
-plot( g$fitted.values, stud, ylab = "Studentized Residuals", main = "Studentized Residuals", pch = 16 )
+plot( g$fitted.values, stud, ylab = "Studentized Residuals",xlab = "Fitted Values", main = "Studentized Residuals", pch = 16 )
 points( g$fitted.values[watchout_ids_stud], 
         stud[watchout_ids_stud], col = 'pink', pch = 16 )
 abline( h = c(-2,2), lty = 2, col = 'orange' )
@@ -343,6 +343,12 @@ anova(gA)  #pvalue basso, rifiuto hp tutte le medie sono uguali
 
 #5) int conf e prev
 gp=lm(scoliosi$lumbar_lordosis_angle~scoliosi$pelvic_incidence,data=scoliosi)
+summary(gp)
+
+x11()
+plot(scoliosi$pelvic_incidence,scoliosi$lumbar_lordosis_angle)
+abline(a=gp$coefficients[1],b=gp$coefficients[2])
+
 grid = seq( min(scoliosi$pelvic_incidence), max(scoliosi$pelvic_incidence), (max(scoliosi$pelvic_incidence)- min(scoliosi$pelvic_incidence))/309 )
 
 # automatic prediction
