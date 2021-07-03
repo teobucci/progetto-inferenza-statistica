@@ -193,5 +193,9 @@ influencePlot( gk, id.method = "identify", main = "influential Plot",
 influenti_nomi=row.names(influencePlot( reg, main = "influential Plot"))#, id=list(method="identify")))
 influenti=c()
 for (names in influenti_nomi)
-  influenti=c(influenti,which(scoliosi$Country==names))
+  influenti=c(influenti,which(scoliosi$class==names))
+influenti
+scoliosi$class[influenti]
 
+Levscol = scoliosi[-influenti,]
+Levscol = Levscol[seq(4,9,1)]
