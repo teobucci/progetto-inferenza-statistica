@@ -85,7 +85,7 @@ qqline( g$res )
 # qqnorm( gb$res, ylab = "Raw Residuals", pch = 16 )
 # qqline( gb$res )
 
-#leverages
+#residui studentizzati
 stud = rstandard( g )
 
 watchout_ids_stud = which( abs( stud ) > 2 )
@@ -135,3 +135,34 @@ shapiro.test(gk$residuals) #ho normalita
 
 qqnorm( gk$res, ylab = "Raw Residuals", pch = 16 )
 qqline( gk$res )
+
+#ANOVA
+
+my_colors = brewer.pal( length( levels( scoliosi$class ) ), 'Set2')  #estraggo tanti colori
+
+x11()
+boxplot( scoliosi$lumbar_lordosis_angle ~ scoliosi$class , xlab = 'class', ylab = 'lordosis',
+         main = 'lumbar lordosis angle according to class', col = my_colors 
+         )
+abline( h = mean( scoliosi$lumbar_lordosis_angle ) )  # linea sulla media globale dell angolo bla bla
+
+tapply( scoliosi$lumbar_lordosis_angle, scoliosi$class, length )#60-100-150
+tapply( scoliosi$lumbar_lordosis_angle, scoliosi$class, mean )#35-43-64
+
+Ps = tapply( scoliosi$lumbar_lordosis_angle,scoliosi$class , function( x ) ( shapiro.test( x )$p ) )
+Ps
+#non abbiamo ipotesi di normalita
+Var = tapply( scoliosi$lumbar_lordosis_angle,scoliosi$class , var )
+Var  #95-152-268
+scoliosi$class=factor(scoliosi$class,ordered=F)
+leveneTest(scoliosi$lumbar_lordosis_angle, scoliosi$class)
+#rifiuto ipotesi nulla, non c'è omoschedasticità
+
+reg=lm(scoliosi$lumbar_lordosis_angle~scoliosi$class,data=scoliosi)
+summary(reg)
+
+anB=boxcox(reg)
+best_lambda=anB$x[which.max(anB$y)]
+best_lambda
+
+
