@@ -23,6 +23,9 @@ head(scoliosi)
 print(sapply(scoliosi,function(x) any(is.na(x)))) 
 print(sapply(scoliosi, typeof)) 
 
+print(sapply(cereal,function(x) any(is.na(x)))) 
+print(sapply(cereal, typeof)) 
+
 #Look at the main statistics for each covariate:
 summary(scoliosi)
 
