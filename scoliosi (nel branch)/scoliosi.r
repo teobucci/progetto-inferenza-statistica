@@ -1,8 +1,8 @@
-library( car )
-library( faraway )
-library( leaps )
+library(car)
+library(faraway)
+library(leaps)
 library(MASS)
-library( GGally)
+library(GGally)
 library(rgl)
 library(dplyr)
 library(data.table)
@@ -17,53 +17,80 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 # carico il dataset
 scoliosi = read.csv("column_3C_weka.csv", header = TRUE)
 
-#na.omit(scoliosi)
+# visualizza il dataset
 View(scoliosi)
-# Dimensioni
+
+# che dimensioni ha
 dim(scoliosi)
+# 310 osservazioni e 7 covariate, di cui 1 categorica
+
 # Overview delle prime righe
 head(scoliosi)
 
 #controllo se ci sono degli NA
 print(sapply(scoliosi,function(x) any(is.na(x)))) 
 print(sapply(scoliosi, typeof)) 
+# tutto FALSE, non ci sono NA, altrimenti avremmo fatto na.omit(scoliosi)
 
-#Look at the main statistics for each covariate:
+#sommario del dataset
 summary(scoliosi)
 
 x11()
+# faccio il mega ccpairg per avere un'idea dei dati
 ggpairs(scoliosi)
 
+# generiamo il primo modello lineare, come risposta "lumbar_lordosis_angle"
+# escludiamo "class" che è la categorica
 g1 = lm( lumbar_lordosis_angle ~ .-class, data = scoliosi )
 
-summary( g1 )   #ci sono na
-#mostro che ? lin dipendente
+# esaminiamolo
+summary( g1 )
+
+# R^2_adj iniziale abbastanza buono come punto di partenza 0.5272
+# molto significativo "pelvic_incidence"
+# p-value dell'F-test 2.2e-16, c'è evidenza per dire che qualche covariate
+# sia poco significativa
+
+# ci sono NA in corrispondenza di "sacral_slope", cercando su Google
+# scopriamo che è indice di lineare indipendenza tra le covariate, procediamo
+# quindi subito con l'analisi di questo aspetto
+
+# prevediamo "sacral_slope" in funzione di tutto il resto, tranne la nostra
+# risposta originale e la categorica
 g2 = lm(sacral_slope~ .-class-lumbar_lordosis_angle, data = scoliosi )
 
+# vediamo cosa otteniamo
 summary( g2 )
-# sacral slope+pelvic tilt=pelvic incidence
+# osserviamo che R^2_adj è esattamente 1, osservando i beta dei parametri
+# scopriamo che 
+# sacral_slope + pelvic_tilt = pelvic_incidence
+# cercando su internet nei siti di ambito medico abbiamo conferma di questa cosa
+# di conseguenza escludiamo questa covariata
+
+# prima di farlo, vediamo la correlazione tramite dei grafici
+# X è un sotto-dataset escludendo la risposta e la categorica
 X = scoliosi [c(-3,-7)]
 cor( X )
 
 x11()
 corrplot(cor(X), method='number')
+# le correlazioni sono 1, 0.63, 0.81, a conferma di quanto detto
+
 x11()
 corrplot(cor(X), method='color')
+
 x11()
 heatmap( cor( X ), Rowv = NA, Colv = NA, symm = TRUE, keep.dendro = F)
 #image( as.matrix( cor( X ) ), main = 'Correlation of X' )
 
-ggpairs(X)
 
-
-
-
-
+# procediamo con il nostro modello escludendo la "sacral_slope" e la categorica
 g = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, data = scoliosi )
 
 summary( g )
+# come ci aspettavamo  l'R^2_adj è invariato a 0.5272, così come p-value 2.2e-16
 
-
+# controlliamo 
 plot(g,which=1)#NO OMOSCHEDASTICIT?
 shapiro.test(g$residuals) #no normalit?
 
@@ -155,7 +182,7 @@ Var = tapply( scoliosi$lumbar_lordosis_angle,scoliosi$class , var )
 Var  #95-152-268
 scoliosi$class=factor(scoliosi$class,ordered=F)
 leveneTest(scoliosi$lumbar_lordosis_angle, scoliosi$class)
-#rifiuto ipotesi nulla, non c'� omoschedasticit�
+#rifiuto ipotesi nulla, non c'? omoschedasticit?
 
 #non so cosa sia(?)  secondo me da togliere:
 ###
