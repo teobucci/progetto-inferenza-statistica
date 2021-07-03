@@ -17,7 +17,7 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 # carico il dataset
 scoliosi = read.csv("column_3C_weka.csv", header = TRUE)
 
-na.omit(scoliosi)
+#na.omit(scoliosi)
 View(scoliosi)
 # Dimensioni
 dim(scoliosi)
@@ -37,7 +37,7 @@ ggpairs(scoliosi)
 g1 = lm( lumbar_lordosis_angle ~ .-class, data = scoliosi )
 
 summary( g1 )   #ci sono na
-#mostro che è lin dipendente
+#mostro che ? lin dipendente
 g2 = lm(sacral_slope~ .-class-lumbar_lordosis_angle, data = scoliosi )
 
 summary( g2 )
@@ -64,8 +64,8 @@ g = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, data = scoliosi )
 summary( g )
 
 
-plot(g,which=1)#NO OMOSCHEDASTICITÃ
-shapiro.test(g$residuals) #no normalità
+plot(g,which=1)#NO OMOSCHEDASTICIT?
+shapiro.test(g$residuals) #no normalit?
 
 qqnorm( g$res, ylab = "Raw Residuals", pch = 16 )
 qqline( g$res )
