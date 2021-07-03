@@ -321,29 +321,30 @@ anova(gA)  #pvalue basso, rifiuto hp tutte le medie sono uguali
 
 #5) int conf e prev
 gp=lm(scoliosi$lumbar_lordosis_angle~scoliosi$pelvic_incidence,data=scoliosi)
-grid = seq( min(scoliosi$pelvic_incidence), max(scoliosi$pelvic_incidence), 2 )
+grid = seq( min(scoliosi$pelvic_incidence), max(scoliosi$pelvic_incidence), (max(scoliosi$pelvic_incidence)- min(scoliosi$pelvic_incidence))/309 )
 
 # automatic prediction
-y.pred = predict( gp, data.frame( scoliosi$pelvic_incidence = grid ), interval = "confidence", se = T )
+ypred = predict( gp, data.frame( grid ), interval = "confidence", se = T )
 
-names( y.pred )
+names( ypred )
 
 # y.pred$fit[ ,1 ] # predicted values \hat{y}_{new}.
-# y.pred$fit[ ,2 ] # LB confidence interval for y_{new}.
-# y.pred$fit[ ,3 ] # UB confidence interval for y_{new}.
+ypred.inf=ypred$fit[ ,2 ] # LB confidence interval for y_{new}.
+ypred.sup=ypred$fit[ ,3 ] # UB confidence interval for y_{new}.
 
-y.pred$fit
+ypred$fit
 
 ##Plot the CI of predictions.
 x11()
-matplot( grid, cbind( y, y.inf, y.sup ), lty = c( 1, 2, 2 ), 
+plot(grid,ypred)
+matplot( grid, cbind( ypred, ypred.inf, ypred.sup ), lty = c( 1, 2, 2 ), 
          col = c( 1, 'blue', 'blue' ), type = "l", xlab = "pelvic_incidence",
          ylab = "lumbar_lordosis_angle", main = 'IC per la media della risposta' )
 points( scoliosi$pelvic_incidence, scoliosi$lumbar_lordosis_angle, col = "black", pch = 16 )
 
 #__6.c__  Compute the Prediction Interval for the one new observation. In this case the standard errors are:
 
-y.pred2 = predict( gp, data.frame( scoliosi$pelvic_incidence = grid ), interval = "prediction", se = T )
+y.pred2 = predict( gp, data.frame( grid ), interval = "prediction", se = T )
 # fornisce direttamente gli estremi inf e sup, che prima abbiamo costruito a mano (in un altro caso)
 
 y.pred2$fit[ ,1 ] # predicted values \hat{y}_{new}.
