@@ -371,27 +371,28 @@ qqline( g2_post_bc$res )
 
 ##MARC
 
+# carico il dataset
+scoliosi2 = read.csv("ladrata.csv", header = TRUE)
+
 temp_var <- predict(gp2, interval="confidence") 
 
-scoliosiladri=scoliosi(subset=(abs(res2)<35))
+new_df <- cbind(scoliosi2, temp_var) 
 
-new_df <- cbind(scoliosi, temp_var) 
-
-ggplot(new_df, aes(scoliosi$degree_spondylolisthesis, scoliosi$lumbar_lordosis_angle))+ 
+ggplot(new_df, aes(scoliosi2$degree_spondylolisthesis, scoliosi2$lumbar_lordosis_angle))+ 
   geom_point() + 
   geom_line(aes(y=lwr), color = "red", linetype = "dashed")+ 
   geom_line(aes(y=upr), color = "red", linetype = "dashed")+ 
   geom_smooth(method=lm, se=TRUE)
 
-temp_var <- predict(gp, interval="prediction") 
+temp_var2 <- predict(gp2, interval="prediction") 
 
-new_df <- cbind(scoliosi, temp_var) 
+new_df2 <- cbind(scoliosi2, temp_var) 
 
-ggplot(new_df, aes(scoliosi$pelvic_incidence, scoliosi$lumbar_lordosis_angle))+ 
+ggplot(new_df2, aes(scoliosi2$degree_spondylolisthesis, scoliosi2$lumbar_lordosis_angle))+ 
   geom_point() + 
   geom_line(aes(y=lwr), color = "red", linetype = "dashed")+ 
   geom_line(aes(y=upr), color = "red", linetype = "dashed")+ 
-  geom_smooth(method=lm, se=TRUE)
+  geom_smooth(method=lm, se=TRUE,xlab="grado di spondilolistesi",ylab="angolo di lordosi lombare")
 
 ##
 
