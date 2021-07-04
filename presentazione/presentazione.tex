@@ -47,7 +47,7 @@
 
 \section{Presentazione del dataset}
 \begin{frame}
-    \frametitle{Scelta del dataset: scoliosi}
+    \frametitle{Scelta del dataset: Biomechanical features of orthopedic patients}
     Fonte: Lichman, M. (2013). UCI Machine Learning Repository [\texttt{http://archive.ics.uci.edu/ml}]. Irvine, CA: University of California, School of Information and Computer Science
     %\footnote{\texttt{https://www.kaggle.com/uciml/biomechanical-features-of-orthopedic-patients?select=column_3C_weka.csv}}
 \end{frame}
@@ -61,7 +61,8 @@
         \item lumbar lordosis angle (continua)
         \item sacral slope (continua)
         \item pelvic radius (continua)
-        \item grade of spondylolisthesis (categorica)
+        \item grade of spondylolisthesis (continua)
+        \item class (categorica)
     \end{itemize}
     con $310$ osservazioni.
 \end{frame}
@@ -119,7 +120,7 @@
 
 
 \begin{frame}
-	\fg{0.5}{00ggpairs_scoliosi}
+	\fg{1}{00ggpairs_scoliosi}
 \end{frame}
 
 
@@ -288,7 +289,7 @@ F-statistic: 87.15 on 4 and 305 DF,  p-value: < 2.2e-16
 
 
 \begin{frame}
-	\fg{0.8}{04residuistudentizzati}
+	\fg{0.6}{04residuistudentizzati}
 \end{frame}
 
 
@@ -404,8 +405,18 @@ F-statistic: 156.4 on 4 and 300 DF,  p-value: < 2.2e-16
 
 
 
-\begin{frame}
-	Il modello migliore è quello senza i punti influenti trovati coi residui studentizzati.
+\begin{frame}[fragile]
+	Aggiungiamo il calcolo dell'AIC.
+	\begin{verbatim}
+> AIC(g_post_lev)
+[1] 2172.373
+> AIC(g_post_rs)
+[1] 2134.629
+> AIC(g_post_both)
+[1] 2296.307
+	\end{verbatim}
+
+	Il modello migliore è quello senza i punti influenti trovati coi residui studentizzati, avendo $R^{2}_{adj}$ maggiore e AIC minore.
 
 	L'$R^2_{adj}$ aumenta notevolmente a 0.7261.
 
@@ -680,26 +691,26 @@ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’
 
 
 
-\section{Conclusioni}
-\begin{frame}
-    \frametitle{Sample frame title}
-
-    In this slide, some important text will be
-    \alert{highlighted} because it's important.
-    Please, don't abuse it.
-
-    \begin{block}{Remark}
-        Sample text
-    \end{block}
-
-    \begin{alertblock}{Important theorem}
-        Sample text in red box
-    \end{alertblock}
-
-    \begin{examples}
-        Sample text in green box. The title of the block is ``Examples".
-    \end{examples}
-\end{frame}
+%\section{Conclusioni}
+%\begin{frame}
+%    \frametitle{Sample frame title}
+%
+%    In this slide, some important text will be
+%    \alert{highlighted} because it's important.
+%    Please, don't abuse it.
+%
+%    \begin{block}{Remark}
+%        Sample text
+%    \end{block}
+%
+%    \begin{alertblock}{Important theorem}
+%        Sample text in red box
+%    \end{alertblock}
+%
+%    \begin{examples}
+%        Sample text in green box. The title of the block is ``Examples".
+%    \end{examples}
+%\end{frame}
 
 
 \end{document}
