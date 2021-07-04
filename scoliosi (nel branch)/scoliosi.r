@@ -334,7 +334,7 @@ bartlett.test(  (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ,sco
 boxcoxfr(scoliosi$lumbar_lordosis_angle, scoliosi$class, option = "both", lambda = seq(-3, 3, 0.01), lambda2 = NULL, 
          tau = 0.05, alpha = 0.05, verbose = TRUE)
 
-gA = lm( (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ~ class-sacral_slope, data=scoliosi )
+gA = lm( (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ~ class, data=scoliosi )
 
 summary(gA)  #meglio, tutti significativi, rquadro discreto
 anova(gA)  #pvalue basso, rifiuto hp tutte le medie sono uguali
