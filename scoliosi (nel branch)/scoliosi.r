@@ -342,8 +342,39 @@ anova(gA)  #pvalue basso, rifiuto hp tutte le medie sono uguali
 
 
 #5) int conf e prev
+
 gp=lm(scoliosi$lumbar_lordosis_angle~scoliosi$pelvic_incidence,data=scoliosi)
 summary(gp)
+
+plot(gp,which=1) #noto omoschedasticita dei residui
+shapiro.test(gp$residuals) #ho normalita, p-value da 0.196 a 0.22, migliora la normalita'
+
+qqnorm( gp$res, ylab = "Raw Residuals", pch = 16 )
+qqline( gp$res )
+
+##MARC
+
+temp_var <- predict(gp, interval="confidence") 
+
+new_df <- cbind(scoliosi, temp_var) 
+
+ggplot(new_df, aes(scoliosi$pelvic_incidence, scoliosi$lumbar_lordosis_angle))+ 
+  geom_point() + 
+  geom_line(aes(y=lwr), color = "red", linetype = "dashed")+ 
+  geom_line(aes(y=upr), color = "red", linetype = "dashed")+ 
+  geom_smooth(method=lm, se=TRUE)
+
+temp_var <- predict(gp, interval="prediction") 
+
+new_df <- cbind(scoliosi, temp_var) 
+
+ggplot(new_df, aes(scoliosi$pelvic_incidence, scoliosi$lumbar_lordosis_angle))+ 
+  geom_point() + 
+  geom_line(aes(y=lwr), color = "red", linetype = "dashed")+ 
+  geom_line(aes(y=upr), color = "red", linetype = "dashed")+ 
+  geom_smooth(method=lm, se=TRUE)
+
+##
 
 x11()
 plot(scoliosi$pelvic_incidence,scoliosi$lumbar_lordosis_angle)
@@ -352,7 +383,7 @@ abline(a=gp$coefficients[1],b=gp$coefficients[2])
 grid = seq( min(scoliosi$pelvic_incidence), max(scoliosi$pelvic_incidence), (max(scoliosi$pelvic_incidence)- min(scoliosi$pelvic_incidence))/309 )
 
 # automatic prediction
-ypred = predict( gp, data.frame( scoliosi$pelvic_incidence=grid ), interval = "confidence", se = T )
+ypred = predict( gp, data.frame( grid ), interval = "confidence", se = T )
 ypred
 
 names( ypred )
@@ -364,7 +395,7 @@ tc    = qt( 0.975, length( grid ) - 2 )
 ypred.sup = ypred$fit + tc * ypred$se
 ypred.inf = ypred$fit - tc * ypred$se
 
-IC = cbind( ypred$fit, y.inf, y.sup )
+IC = cbind( ypred$fit, ypred.inf, ypred.sup )
 
 ##Plot the CI of predictions.
 plot.new()
