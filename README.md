@@ -1,4 +1,4 @@
-# Analisi del dataset *breastcancer.csv*
+# Analisi del dataset *column_3C_weka.csv*
 
 Progetto per il corso di **Modelli e Metodi dell'Inferenza Statistica**.
 
@@ -10,3 +10,7 @@ Autori:
 - Teo Bucci
 - Gabriele Corbo
 - Davide Fabroni
+
+Esaminatrice: Chiara Masci.
+
+Voto finale: +4 punti.
