@@ -4,23 +4,16 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
-
 \usepackage{csvsimple}
 \usepackage{graphicx}
-\graphicspath{ {./files/} } % Path relative to the main .tex file 
+\graphicspath{ {./img/} } % Path relative to the main .tex file 
 \newcommand{\fg}[2]{%
   \begin{center}
       \includegraphics[width = #1\textwidth]{#2}%
   \end{center}
 }
 
-
 \usepackage{verbatim}
-
-
-
-
-
 
 \title{Regressione Lineare e Anova}
 
@@ -31,10 +24,6 @@
 \institute{Politecnico di Milano}
 
 \date{Luglio 2021}
-
-
-
-
 
 \begin{document}
 
@@ -52,7 +41,6 @@
     %\footnote{\texttt{https://www.kaggle.com/uciml/biomechanical-features-of-orthopedic-patients?select=column_3C_weka.csv}}
 \end{frame}
 
-
 \begin{frame}
     \frametitle{Covariate presenti}
     \begin{itemize}
@@ -67,20 +55,17 @@
     con $310$ osservazioni.
 \end{frame}
 
-
 \begin{frame}
 	Sono indici dell'inclinazione del bacino sul piano sagittale.
 	\fg{0.5}{piani.png}
 	Le classi sono \emph{Hernia, Spondylolisthesis, Normal}. % Una non esclude l'altra in realtà
 \end{frame}
 
-
 \begin{frame}
     \begin{center}
         \includegraphics[width=0.9\textwidth]{classificazione-spondilolistesi.jpg}
     \end{center}
 \end{frame}
-
 
 \section{Obiettivo}
 \begin{frame}
@@ -90,14 +75,12 @@
     \end{center}
 \end{frame}
 
-
 \begin{frame}
     ... per poter stimare il \textbf{lumbar lordosis angle}, un parametro che riguarda la sezione medio-bassa della schiena che misura la concavità della zona lombare della schiena.
     \begin{center}
         \includegraphics[width=0.5\textwidth]{lla.png}
     \end{center}
 \end{frame}
-
 
 \begin{frame}
     Vantaggi di questo approccio
@@ -132,13 +115,9 @@
 	{\normalsize Non ci sono degli NA.}
 \end{frame}
 
-
-
 \begin{frame}
 	\fg{1}{00ggpairs}
 \end{frame}
-
-
 
 \begin{frame}[fragile]
 	Generiamo il primo modello lineare, come risposta \texttt{lumbar\_lordosis\_angle}.
@@ -172,7 +151,6 @@
 	\end{verbatim}
 	}
 \end{frame}
-
 
 \begin{frame}
 	$R^2_{adj}$ iniziale abbastanza buono come punto di partenza: $0.5272$.
@@ -214,7 +192,6 @@ F-statistic: 6.337e+20 on 4 and 305 DF,  p-value: < 2.2e-16
 	}
 \end{frame}
 
-
 \begin{frame}
 	$R^{2}_{adj}$ vale $1$, osservando i $\beta$ scopriamo che
 	$$ \text{sacralslope} + \text{pelvictilt} = \text{pelvicincidence}$$
@@ -225,19 +202,10 @@ F-statistic: 6.337e+20 on 4 and 305 DF,  p-value: < 2.2e-16
 	Escludiamo questa covariata.
 \end{frame}
 
-
-
-
-
 %\begin{frame}
 %	Vediamo anche la correlazione.
 %	\fg{0.6}{01coorplot}
 %\end{frame}
-
-
-
-
-
 
 \begin{frame}[fragile]
 	Procediamo con il nostro modello escludendo la \texttt{sacral\_slope} e la categorica.
@@ -269,10 +237,6 @@ F-statistic: 87.15 on 4 and 305 DF,  p-value: < 2.2e-16
 	}
 \end{frame}
 
-
-
-
-
 \begin{frame}
 	\frametitle{Controlliamo le ipotesi}
 	L'omoschedasticità non è fantastica e lo Shapiro test rifiuta la normalità con un p-value di 3.878e-11.
@@ -282,9 +246,6 @@ F-statistic: 87.15 on 4 and 305 DF,  p-value: < 2.2e-16
 	   \includegraphics[width=0.475\textwidth]{03qqplot}
 	\end{figure}
 \end{frame}
-
-
-
 
 \begin{frame}[fragile]
 	Procediamo dapprima con la pulizia del dataset, controllando se migliorano le ipotesi di lavoro, e nel caso procediamo con la trasformazione box cox.
@@ -301,8 +262,6 @@ F-statistic: 87.15 on 4 and 305 DF,  p-value: < 2.2e-16
 	Vediamo anche residui studentizzati e standardizzati.
 \end{frame}
 
-
-
 \begin{frame}[fragile]
 	Gli standardizzati sono
 	\begin{verbatim}
@@ -312,20 +271,14 @@ F-statistic: 87.15 on 4 and 305 DF,  p-value: < 2.2e-16
 	e coincidono con gli studentizzati.
 \end{frame}
 
-
 \begin{frame}
 	\fg{0.6}{05graficone}
 \end{frame}
-
-
-
 
 \begin{frame}
 	\textbf{Punti influenti}
 	\fg{0.6}{06influencialPlot}
 \end{frame}
-
-
 
 \begin{frame}[fragile]
 	Dopo aver tolto i leverage:
@@ -357,8 +310,6 @@ F-statistic: 160.7 on 4 and 285 DF,  p-value: < 2.2e-16
 	}
 \end{frame}
 
-
-
 \begin{frame}[fragile]
 	Dopo aver tolto gli studentizzati:
 
@@ -388,10 +339,6 @@ F-statistic: 195.2 on 4 and 289 DF,  p-value: < 2.2e-16
 	\end{verbatim}
 	}
 \end{frame}
-
-
-
-
 
 \begin{frame}[fragile]
 	Dopo aver tolto i leverage e gli studentizzati:
@@ -423,8 +370,6 @@ F-statistic: 156.4 on 4 and 300 DF,  p-value: < 2.2e-16
 	}
 \end{frame}
 
-
-
 \begin{frame}[fragile]
 	Aggiungiamo il calcolo dell'AIC.
 	\begin{verbatim}
@@ -443,13 +388,9 @@ F-statistic: 156.4 on 4 and 300 DF,  p-value: < 2.2e-16
 	p-value è 2.2e-16, ci sono ancora covariate non significative, stavolta diverse da prima.
 \end{frame}
 
-
-
 \begin{frame}
 	\fg{0.6}{04residuistudentizzati}
 \end{frame}
-
-
 
 \begin{frame}
 	L'omoschedasticità migliora, lo Shapiro test rifiuta la normalità con un p-value di 0.04041.
@@ -460,15 +401,11 @@ F-statistic: 156.4 on 4 and 300 DF,  p-value: < 2.2e-16
 	\end{figure}
 \end{frame}
 
-
 \begin{frame}
 	\frametitle{Trasformazione box cox}
 	Otteniamo $\lambda = 0.6262626$
 	\fg{0.6}{09boxcox}
 \end{frame}
-
-
-
 
 \begin{frame}[fragile]
 	Generiamo il nuovo ML dove modelliamo $\frac{Y^{\lambda}-1}{\lambda}$
@@ -502,7 +439,6 @@ F-statistic: 194.1 on 4 and 289 DF,  p-value: < 2.2e-16
 
 \end{frame}
 
-
 \begin{frame}
 	$R^2_{adj}$ diminuisce da 0.7261 a 0.725.
 
@@ -517,9 +453,6 @@ F-statistic: 194.1 on 4 and 289 DF,  p-value: < 2.2e-16
 	   \includegraphics[width=0.475\textwidth]{11qqplot}
 	\end{figure}
 \end{frame}
-
-
-
 
 \begin{frame}[fragile]
 \frametitle{Selezione delle covariate}
@@ -552,14 +485,11 @@ F-statistic: 255.9 on 3 and 290 DF,  p-value: < 2.2e-16
 	}
 \end{frame}
 
-
-
 \begin{frame}
 	$R^2_{adj}$ scende da 0.725 a 0.723, ma semplifica di molto il modello, quindi procediamo con questa modifica.
 
 	Verifichiamo come cambiano le ipotesi di normalità e omoschedasticità.
 \end{frame}
-
 
 \begin{frame}
 	L'omoschedasticità rimane la stessa, lo Shapiro test migliora con un p-value di 0.22.
@@ -577,11 +507,6 @@ F-statistic: 255.9 on 3 and 290 DF,  p-value: < 2.2e-16
 	$$
 	dove $\lambda=0.6262626$.
 \end{frame}
-
-
-
-
-
 
 \section{ANOVA}
 
@@ -616,16 +541,11 @@ Bartlett's K-squared = 23.183, df = 2, p-value = 9.242e-06
 	}
 \end{frame}
 
-
-
 \begin{frame}
 	\frametitle{Trasformazione box cox}
 	Otteniamo $\lambda = 0.31$
 	\fg{0.6}{15boxcox}
 \end{frame}
-
-
-
 
 \begin{frame}[fragile]
 	Lo Shapiro test ci porta ora a non rifiutare la normalità nei gruppi.
@@ -652,7 +572,6 @@ Bartlett's K-squared = 0.49971, df = 2, p-value = 0.7789
 	\end{verbatim}
 	}
 \end{frame}
-
 
 \begin{frame}[fragile]
 	Generiamo ora il modello.
@@ -699,36 +618,5 @@ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’
 
 	Il p-value 2.2e-16 è basso e ci porta a rifiutare l'ipotesi nulla che le medie siano tutte uguali.
 \end{frame}
-
-
-%\section{Extra}
-%\begin{frame}
-%	Intervallo di confidenza e di previsione al 95\% per LLA in funzione di DS.
-%	\fg{0.4}{16intervallo}
-%\end{frame}
-
-
-
-%\section{Conclusioni}
-%\begin{frame}
-%    \frametitle{Sample frame title}
-%
-%    In this slide, some important text will be
-%    \alert{highlighted} because it's important.
-%    Please, don't abuse it.
-%
-%    \begin{block}{Remark}
-%        Sample text
-%    \end{block}
-%
-%    \begin{alertblock}{Important theorem}
-%        Sample text in red box
-%    \end{alertblock}
-%
-%    \begin{examples}
-%        Sample text in green box. The title of the block is ``Examples".
-%    \end{examples}
-%\end{frame}
-
 
 \end{document}
