@@ -12,12 +12,9 @@ library(RColorBrewer)
 library(AID)
 library(onewaytests)
 
-# setto la working directory a quella del file sorgente
-library("rstudioapi")
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # carico il dataset
-scoliosi = read.csv("column_3C_weka.csv", header = TRUE)
+scoliosi = read.csv(here::here("data","column_3C_weka.csv"), header = TRUE)
 
 # visualizza il dataset
 View(scoliosi)
@@ -26,27 +23,27 @@ View(scoliosi)
 dim(scoliosi)
 # 310 osservazioni e 7 covariate, di cui 1 categorica
 
-# Overview delle prime righe
+# overview delle prime righe
 head(scoliosi)
 
-#controllo se ci sono degli NA
+# controllo se ci sono degli NA
 print(sapply(scoliosi,function(x) any(is.na(x)))) 
 print(sapply(scoliosi, typeof)) 
 # tutto FALSE, non ci sono NA, altrimenti avremmo fatto na.omit(scoliosi)
 
-#sommario del dataset
+# sommario del dataset
 summary(scoliosi)
 
 x11()
-#Â faccio il mega ccpairg per avere un'idea dei dati
+# faccio il mega ccpairg per avere un'idea dei dati
 ggpairs(scoliosi)
 
 # generiamo il primo modello lineare, come risposta "lumbar_lordosis_angle"
 # escludiamo "class" che Ã¨ la categorica
-g1 = lm( lumbar_lordosis_angle ~ .-class, data = scoliosi )
+g1 <- lm(lumbar_lordosis_angle ~ . -class, data = scoliosi)
 
 # esaminiamolo
-summary( g1 )
+summary(g1)
 
 # R^2_adj iniziale abbastanza buono come punto di partenza 0.5272
 # molto significativo "pelvic_incidence"
@@ -59,7 +56,7 @@ summary( g1 )
 
 # prevediamo "sacral_slope" in funzione di tutto il resto, tranne la nostra
 # risposta originale e la categorica
-g2 = lm(sacral_slope~ .-class-lumbar_lordosis_angle, data = scoliosi )
+g2 <- lm(sacral_slope~ .-class-lumbar_lordosis_angle, data = scoliosi )
 
 # vediamo cosa otteniamo
 summary( g2 )
@@ -88,7 +85,7 @@ heatmap( cor( X ), Rowv = NA, Colv = NA, symm = TRUE, keep.dendro = F)
 
 
 # procediamo con il nostro modello escludendo la "sacral_slope" e la categorica
-g = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, data = scoliosi )
+g <- lm( lumbar_lordosis_angle ~ .-class-sacral_slope, data = scoliosi )
 
 summary( g )
 # come ci aspettavamo  l'R^2_adj Ã¨ invariato a 0.5272, cosÃ¬ come p-value 2.2e-16
@@ -114,7 +111,7 @@ qqline( g$res )
 # best_lambda = b$x[ which.max( b$y ) ]
 # best_lambda
 # 
-# gb = lm( (lumbar_lordosis_angle^best_lambda -1)/best_lambda ~ .-class, data=scoliosi )
+# gb <- lm( (lumbar_lordosis_angle^best_lambda -1)/best_lambda ~ .-class, data=scoliosi )
 # summary( gb )
 # 
 # plot(gb,which=1)#NO OMOSCHEDASTICIT?, noto nadamento parabolico?
@@ -193,34 +190,34 @@ x11()
 influencePlot( g, id.method = "identify", main = "influential Plot",sub = "Circle size is proportial to Cook's Distance" )
 
 watchout_influential_ids = row.names(influencePlot( g, main = "influential Plot"))#, id=list(method="identify")))
-# "96"  "116" "198" sono influenti, 96 è molto poco influente, quelli seriamente influenti sono sia nei 
+# "96"  "116" "198" sono influenti, 96 ? molto poco influente, quelli seriamente influenti sono sia nei 
 # residui standardizzati che nei studentizzati che nei leverages
 
 influence.measures( g )
 
 #asterischi sui punti di influenza
 #i punti di influenza vanno tolti!!! spostano troppo landamento del modello, anche se con essi ho un modello migliore
-#il modello non è rappresntativo di tutti i dati, vanno tolti
+#il modello non ? rappresntativo di tutti i dati, vanno tolti
 
 # Generiamo di nuovo il modello lineare dopo aver ripulito:
 #-i residui studentizzati 
 #-i leverages
 #-entrambi
 
-g_post_lev = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( lev<2*p/n)  )
+g_post_lev <- lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( lev<2*p/n)  )
 summary( g_post_lev )
 AIC(g_post_lev)
 
-g_post_rs = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs(stud)<2 ) )
+g_post_rs <- lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs(stud)<2 ) )
 summary( g_post_rs )
 AIC(g_post_rs)
 
-g_post_both = lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs(stud)<2 | lev<2*p/n ))
+g_post_both <- lm( lumbar_lordosis_angle ~ .-class-sacral_slope, scoliosi, subset = ( abs(stud)<2 | lev<2*p/n ))
 summary( g_post_both )
 AIC(g_post_both)
 
-#notiamo che il modello migliore è quello senza i punti influenti trovati coi residui studentizzati, 
-#poiche è quello con l r quadro maggiore e quello con l AIC minore  
+#notiamo che il modello migliore ? quello senza i punti influenti trovati coi residui studentizzati, 
+#poiche ? quello con l r quadro maggiore e quello con l AIC minore  
 
 # l'R^2_adj aumenta notevolmente a 0.7261
 # p Ã¨ 2.2e-16, ci sono ancora covariate non significative, stavolta diverse da prima
@@ -247,7 +244,7 @@ best_lambdagl
 # lambda = 0.6262626
 
 # generiamo il nuovo LM dove modelliamo una funzione della risposta
-g_post_bc = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope, data=scoliosi,subset = ( abs(stud) < 2 ) )
+g_post_bc <- lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope, data=scoliosi,subset = ( abs(stud) < 2 ) )
 summary( g_post_bc )
 # R^2_adj diminuisce da 0.7261 a 0.725, nessun problema
 # ci sono covariate poco significative
@@ -270,7 +267,7 @@ qqline( g_post_bc$res )
 
 # rimuoviamo "pelvic_radius" che ha un p-value "one-at-a-time" di 0.0755,
 # c'Ã¨ evidenza per dire che non Ã¨ significativo
-g_without_pr = lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope-pelvic_radius, data=scoliosi,subset = ( abs(stud) < 2 ) )
+g_without_pr <- lm( (lumbar_lordosis_angle^best_lambdagl -1)/best_lambdagl ~ .-class-sacral_slope-pelvic_radius, data=scoliosi,subset = ( abs(stud) < 2 ) )
 summary( g_without_pr )
 # R^2_adj scende da 0.725 a 0.723, ma semplifica di molto il modello, quindi ok
 
@@ -334,7 +331,7 @@ bartlett.test(  (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ,sco
 boxcoxfr(scoliosi$lumbar_lordosis_angle, scoliosi$class, option = "both", lambda = seq(-3, 3, 0.01), lambda2 = NULL, 
          tau = 0.05, alpha = 0.05, verbose = TRUE)
 
-gA = lm( (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ~ class, data=scoliosi )
+gA <- lm( (scoliosi$lumbar_lordosis_angle^best_lambda -1)/best_lambda ~ class, data=scoliosi )
 
 summary(gA)  #meglio, tutti significativi, rquadro discreto
 anova(gA)  #pvalue basso, rifiuto hp tutte le medie sono uguali
@@ -360,7 +357,7 @@ anC=boxcox(gp,lambda = seq(-3,3,by=0.01))
 best_lambda2=anC$x[which.max(anB$y)]
 best_lambda2
 
-g2_post_bc = lm( lumbar_lordosis_angle ~ log(scoliosi$pelvic_incidence) , data=scoliosi) 
+g2_post_bc <- lm( lumbar_lordosis_angle ~ log(scoliosi$pelvic_incidence) , data=scoliosi) 
 summary( g2_post_bc )
 
 plot(g2_post_bc,which=1) #noto omoschedasticita dei residui
@@ -372,7 +369,7 @@ qqline( g2_post_bc$res )
 ##MARC
 
 # carico il dataset
-scoliosi2 = read.csv("ladrata.csv", header = TRUE)
+scoliosi2 = read.csv(here::here("data","column_3C_weka.csv"), header = TRUE)
 
 temp_var <- predict(gp2, interval="confidence") 
 
